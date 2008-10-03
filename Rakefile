@@ -145,17 +145,23 @@ task :publish_news do
   end
 end
 
-if require 'webgen/rake/webgentask'
-
+begin
+  require 'webgen/rake/webgentask'
+  
   Webgen::Rake::WebgenTask.new do |t|
     t.directory = File.join( File.dirname( __FILE__ ), 'doc/site')
     t.clobber_outdir = true
   end
-
+  
+  task :publish_site => :webgen do
+    sh %{scp -r -q doc/site/output/* #{RUBYFORGE_USER}@rubyforge.org:/var/www/gforge-projects/#{RUBYFORGE_PROJECT}/}
+  end
+    
+rescue LoadError
+  task :publish_site
 end
 
-task :publish_site => :webgen do
-  sh %{scp -r -q doc/site/output/* #{RUBYFORGE_USER}@rubyforge.org:/var/www/gforge-projects/#{RUBYFORGE_PROJECT}/}
-end
+
+
 
 task :release => [:release_files, :publish_news, :publish_site]
