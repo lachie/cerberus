@@ -72,4 +72,5 @@ module Cerberus
        const_get(class_name)
     end
   end
+  
 end

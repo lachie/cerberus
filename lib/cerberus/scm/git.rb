@@ -1,4 +1,5 @@
 require 'cerberus/utils'
+require 'cerberus/hooks'
 
 class Cerberus::SCM::Git
   def initialize(path, config = {})
@@ -13,6 +14,8 @@ class Cerberus::SCM::Git
   end
 
   def update!
+    puts "updating...from git"
+    
     if test(?d, @path + '/.git')
       @status = execute('pull', '-v')
     else
@@ -21,6 +24,10 @@ class Cerberus::SCM::Git
       encoded_url = (@config[:scm, :url].include?(' ') ? "\"#{@config[:scm, :url]}\"" : @config[:scm, :url])
       @status = execute("clone", "#{encoded_url} #{@path}")
     end
+    
+    puts "config: #{@config.inspect}"
+    
+    Cerberus::Hooks.run(:post_update,@config,self)
 
     extract_last_commit_info
   end

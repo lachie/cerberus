@@ -15,6 +15,7 @@ module Cerberus
     end
     
     def run
+      puts "path: #{@path} ... #{@cli_options.inspect}"
       scm_type = @cli_options[:scm] || Cerberus::SCM.guess_type(@path) || 'svn'
       scm = Cerberus::SCM.get(scm_type).new(@path, Config.new(nil, @cli_options))
       say "Can't find any #{scm_type} application under #{@path}" unless scm.url
@@ -131,6 +132,8 @@ module Cerberus
               
               publisher_config = @config[:publisher, pub]
               raise "Publisher have no configuration: #{pub}" unless publisher_config
+              
+              puts "publishing, eh #{publisher_config.inspect}"
               
               events = interpret_state(publisher_config[:on_event] || @config[:publisher, :on_event] || 'default')
               Publisher.get(pub).publish(@status, self, @config) if events.include?(@status.current_state)

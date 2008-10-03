@@ -11,7 +11,14 @@ class Cerberus::Builder::RubyBase
 
   def run
     Dir.chdir @config[:application_root]
+
     @output = `#{@config[:bin_path]}#{choose_exec()} #{@config[:builder, @name.to_sym, :task]} 2>&1`
+    
+    puts
+    puts "rake output:"
+    puts @output
+    puts
+    
     successful?
   end
 
